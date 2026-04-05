@@ -1,0 +1,5 @@
+{
+  "name": "NUV Campus Navigator",
+  "description": "A high-fidelity 3D campus map and navigation system for Navrachana University with floor-wise exploration and shortest path routing.",
+  "requestFramePermissions": []
+}

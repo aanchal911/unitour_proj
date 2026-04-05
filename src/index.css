@@ -1,0 +1,754 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Rajdhani", ui-sans-serif, system-ui, sans-serif;
+  --font-teko: "Teko", sans-serif;
+  --font-orbitron: "Orbitron", sans-serif;
+}
+
+:root {
+  --red: #c0392b;
+  --red-dark: #922b21;
+  --red-glow: rgba(192, 57, 43, 0.45);
+  --sky1: #0c1628;
+  --sky2: #1b2f52;
+  --ground: #1e3a28;
+  --road: #3a3228;
+  --concrete: #b0a898;
+  --glass: rgba(120, 180, 255, 0.18);
+  --gold: #d4a017;
+  --blue: #4a9eff;
+  --green: #44cc88;
+  --orange: #ff6a44;
+  --stair: #fff176;
+  --wc: #cfd8dc;
+  --lift: #90a4ae;
+  --class: #ffffff;
+  --outdoor: #e8f5e9;
+  --lab: #f5f5f5;
+  --faculty: #fff9c4;
+  --eee-bg: #fffde7;
+  --bms-bg: #e3f2fd;
+  --civil-bg: #f1f8e9;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Rajdhani', sans-serif;
+  background: var(--sky1);
+  color: #fff;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+  user-select: none;
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(192, 57, 43, 0.3);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(192, 57, 43, 0.6);
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(192, 57, 43, 0.3) rgba(255, 255, 255, 0.02);
+}
+
+/* 3D Scene Styles */
+.sc-wrap {
+  perspective: 1300px;
+  perspective-origin: 50% 28%;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sc {
+  position: relative;
+  width: 960px;
+  height: 760px;
+  transform-style: preserve-3d;
+  transition: transform 0.45s ease;
+}
+
+.ground {
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  background: radial-gradient(ellipse 75% 65% at 50% 42%, #24573a 0%, #163322 55%, #0c1e14 100%);
+  box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.55), 0 50px 100px rgba(0, 0, 0, 0.7);
+  overflow: hidden;
+}
+
+.ground::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* Building Styles */
+.bld {
+  position: absolute;
+  transform-style: preserve-3d;
+  cursor: pointer;
+  z-index: 10;
+  transition: filter 0.25s;
+}
+
+.bld:hover {
+  filter: brightness(1.28);
+}
+
+.bld.selected {
+  filter: brightness(1.4) drop-shadow(0 0 12px rgba(74, 158, 255, 0.8));
+}
+
+.f-top,
+.f-front,
+.f-right,
+.f-left {
+  position: absolute;
+}
+
+.f-top {
+  background: linear-gradient(135deg, #d4cec6 0%, #b4aea6 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 0 15px rgba(0,0,0,0.1);
+}
+
+.f-top::before {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+  background-image: radial-gradient(circle, rgba(0,0,0,0.05) 1px, transparent 1px);
+  background-size: 12px 12px;
+}
+
+.f-front {
+  background: linear-gradient(180deg, #888080 0%, #646060 100%);
+  overflow: hidden;
+  border-left: 1px solid rgba(255,255,255,0.1);
+}
+
+.f-front::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: 
+    repeating-linear-gradient(transparent 0 14px, rgba(0, 0, 0, 0.4) 14px 16px),
+    repeating-linear-gradient(90deg, transparent 0 10px, rgba(120, 180, 255, 0.15) 10px 18px);
+  background-size: 20px 16px;
+}
+
+.f-right {
+  background: linear-gradient(180deg, #706860 0%, #504840 100%);
+  transform-origin: top left;
+  transform: skewY(-45deg);
+  border-right: 1px solid rgba(0,0,0,0.2);
+}
+
+.f-right::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: 
+    repeating-linear-gradient(transparent 0 14px, rgba(0, 0, 0, 0.5) 14px 16px),
+    repeating-linear-gradient(90deg, transparent 0 10px, rgba(0, 0, 0, 0.3) 10px 18px);
+  background-size: 20px 16px;
+  opacity: 0.6;
+}
+
+.f-right-base {
+  background: #383028;
+}
+
+.bld-base {
+  position: absolute;
+  background: rgba(0,0,0,0.3);
+  filter: blur(4px);
+  z-index: 1;
+}
+
+/* Roof Objects */
+.roof-obj {
+  position: absolute;
+  background: #9e9a96;
+  border: 1px solid rgba(0,0,0,0.2);
+  transform-style: preserve-3d;
+}
+
+.roof-obj-top {
+  position: absolute;
+  background: #bebab4;
+  inset: 0;
+}
+
+.roof-obj-front {
+  position: absolute;
+  background: #787270;
+  width: 100%;
+}
+
+/* Block B Specifics */
+.bld-b .f-top {
+  background: linear-gradient(135deg, #2a2424 0%, #1a1616 100%);
+}
+
+.bld-b .f-front {
+  background: linear-gradient(180deg, #111 0%, #222 100%);
+}
+
+.bld-b .f-front::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(180deg, transparent 0 26px, rgba(192, 57, 43, 0.88) 26px 32px);
+  z-index: 1;
+}
+
+.bld-b .f-front::after {
+  background-image: repeating-linear-gradient(90deg, transparent 0 8px, rgba(0, 0, 0, 0.6) 8px 10px);
+  background-size: 10px 100%;
+  inset: 0;
+  opacity: 0.8;
+}
+
+.bld-b .f-right {
+  background: linear-gradient(180deg, #1a1a1a 0%, #0e0e0e 100%);
+}
+
+.bld-b .f-right::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(180deg, transparent 0 26px, rgba(192, 57, 43, 0.5) 26px 32px);
+  z-index: 1;
+}
+
+.bld-b .f-right::after {
+  background-image: repeating-linear-gradient(90deg, transparent 0 8px, rgba(0, 0, 0, 0.7) 8px 10px);
+  background-size: 10px 100%;
+  inset: 0;
+  opacity: 0.8;
+}
+
+.bld-b .f-right-base {
+  background: #111;
+}
+
+/* Road Styles */
+.road {
+  position: absolute;
+  background: #2e2820;
+  z-index: 2;
+}
+
+.road::after {
+  content: '';
+  position: absolute;
+  background: repeating-linear-gradient(90deg, rgba(255, 200, 60, 0.55) 0 12px, transparent 12px 26px);
+  top: 50%;
+  transform: translateY(-50%);
+  left: 0;
+  right: 0;
+  height: 2px;
+}
+
+.road-v::after {
+  background: repeating-linear-gradient(180deg, rgba(255, 200, 60, 0.55) 0 12px, transparent 12px 26px);
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+  height: auto;
+  width: 2px;
+}
+
+.sw {
+  position: absolute;
+  background: #6e6460;
+  border-radius: 2px;
+  z-index: 3;
+}
+
+.grass {
+  position: absolute;
+  background: rgba(40, 100, 55, 0.45);
+  border-radius: 6px;
+  z-index: 1;
+}
+
+/* Parking */
+.park-zone {
+  position: absolute;
+  background: rgba(55, 48, 40, 0.5);
+  border: 1.5px dashed rgba(255, 230, 80, 0.2);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Teko', sans-serif;
+  font-size: 13px;
+  color: rgba(255, 230, 80, 0.35);
+  letter-spacing: 2px;
+  z-index: 3;
+}
+
+.park-zone::before {
+  content: 'P';
+  position: absolute;
+  top: 4px;
+  left: 8px;
+  font-size: 18px;
+  font-weight: 700;
+  color: rgba(255, 230, 80, 0.25);
+}
+
+/* Pond */
+#pond {
+  position: absolute;
+  z-index: 6;
+  background: radial-gradient(ellipse, #1e8fc8 0%, #0d4f82 60%, #082f50 100%);
+  border-radius: 50% 44% 55% 42%;
+  box-shadow: 0 0 28px rgba(30, 143, 200, 0.5), inset 0 0 18px rgba(0, 0, 0, 0.4);
+  animation: wave 4s ease-in-out infinite;
+}
+
+@keyframes wave {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.04) rotate(2deg);
+  }
+}
+
+/* Trees */
+.tree {
+  position: absolute;
+  z-index: 9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+}
+
+.tc {
+  border-radius: 50%;
+  background: radial-gradient(ellipse, #5ec86e 20%, #2a7035 100%);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+}
+
+.tt {
+  width: 4px;
+  background: #4a2808;
+  border-radius: 2px;
+}
+
+/* Star Animation */
+@keyframes tw {
+  0%,
+  100% {
+    opacity: .15;
+  }
+  50% {
+    opacity: .9;
+  }
+}
+
+.star {
+  position: absolute;
+  border-radius: 50%;
+  background: #fff;
+  animation: tw 3s ease-in-out infinite;
+}
+
+/* Compass */
+.compass {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  width: 64px;
+  height: 64px;
+  background: rgba(8, 12, 28, 0.8);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(74, 158, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 40;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.compass-needle {
+  width: 2px;
+  height: 40px;
+  background: linear-gradient(to bottom, var(--red) 50%, #fff 50%);
+  border-radius: 1px;
+  transition: transform 0.45s ease;
+}
+
+.compass-label {
+  position: absolute;
+  font-family: 'Teko', sans-serif;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 600;
+}
+
+.compass-n { top: 4px; }
+.compass-s { bottom: 4px; }
+.compass-e { right: 4px; }
+.compass-w { left: 4px; }
+
+/* Building Labels */
+.bld-badge {
+  position: absolute;
+  top: -26px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--red);
+  color: #fff;
+  font-family: 'Teko', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 10px var(--red-glow);
+  z-index: 50;
+  pointer-events: none;
+}
+
+.bld-lbl {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(0);
+  background: rgba(6, 10, 22, 0.93);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: 6px;
+  border-left: 3px solid var(--red);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.2s, transform 0.2s;
+  pointer-events: none;
+  z-index: 60;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+/* Blueprint Styles */
+.floor-page { 
+  background: white; 
+  width: 950px; 
+  margin: 0 auto; 
+  padding: 20px; 
+  border: 3px solid #000; 
+  min-height: 500px; 
+  position: relative;
+  box-sizing: border-box;
+  color: #000;
+  font-family: 'Courier New', Courier, monospace;
+  transform-origin: top center;
+}
+
+.blueprint-container {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  background: #050a19;
+}
+
+@keyframes draw {
+  to { stroke-dashoffset: 0; }
+}
+
+.schematic-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: #050a19;
+}
+
+.schematic-frame {
+  background: white;
+  border: 6px solid #000;
+  border-radius: 60px;
+  width: 100%;
+  max-width: 1000px;
+  aspect-ratio: 2 / 1;
+  position: relative;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.schematic-label {
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Teko', sans-serif;
+  font-size: 40px;
+  color: #000;
+  letter-spacing: 8px;
+  text-transform: uppercase;
+}
+
+.path-sequence-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 25px;
+  width: 100%;
+}
+
+.path-box {
+  padding: 10px 20px;
+  background: white;
+  border: 2px solid #000;
+  color: #c0392b;
+  font-family: 'Teko', sans-serif;
+  font-size: 20px;
+  font-weight: bold;
+  text-transform: lowercase;
+  min-width: 100px;
+  text-align: center;
+}
+
+.path-box-arrow {
+  color: white;
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.header { 
+  display: flex; 
+  justify-content: space-between; 
+  border-bottom: 2px solid #000; 
+  margin-bottom: 20px; 
+  font-weight: bold; 
+  font-size: 1.2em; 
+}
+
+.l-structure-top { 
+  position: absolute; 
+  left: 40px; 
+  top: 100px; 
+  width: 310px; 
+  height: 180px; 
+  border: 3px solid #000; 
+  border-bottom: none; 
+  border-right: none; 
+}
+
+.l-structure-main { 
+  position: absolute; 
+  left: 350px; 
+  top: 100px; 
+  width: 500px; 
+  height: 700px; 
+  border: 3px solid #000; 
+}
+
+.box { 
+  position: absolute; 
+  border: 2px solid #000; 
+  background: #ffffff; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  text-align: center; 
+  font-size: 11px; 
+  font-weight: bold; 
+  padding: 5px; 
+  box-sizing: border-box; 
+}
+
+.l-box { 
+  width: 40px; 
+  height: 40px; 
+  border: 2px solid #000; 
+  background: #90a4ae; 
+  text-align: center; 
+  line-height: 40px; 
+  font-weight: bold; 
+  font-size: 12px; 
+}
+
+.wc-box { 
+  width: 100%; 
+  height: 40px; 
+  background: #cfd8dc; 
+  border: 2px solid #000; 
+  line-height: 40px; 
+  font-weight: bold; 
+  margin-bottom: 5px; 
+  font-size: 12px; 
+  text-align: center;
+}
+
+.stair { 
+  position: absolute; 
+  background: #fff176; 
+  border: 2px solid #000; 
+  font-weight: bold; 
+  text-align: center; 
+  font-size: 11px; 
+  z-index: 10; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+}
+
+.outdoor-box { 
+  background: #e8f5e9; 
+  border-radius: 10px; 
+}
+
+.parking-area { 
+  background: #eeeeee; 
+  border: 2px dashed #757575; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  font-weight: bold; 
+  color: #616161; 
+}
+
+/* Specialized 4th Floor Classes */
+.eee-lab { background-color: var(--eee-bg) !important; }
+.bms-lab { background-color: var(--bms-bg) !important; }
+.civil-lab { background-color: var(--civil-bg) !important; }
+.fac-room { background-color: #ffebee !important; }
+
+/* Standard Layouts (Floors 5-8) */
+.wing-left { 
+  position: absolute; 
+  left: 40px; 
+  top: 120px; 
+  width: 310px; 
+  height: 220px; 
+  border: 3px solid #000; 
+  border-right: none; 
+}
+
+.main-block-L { 
+  position: absolute; 
+  left: 350px; 
+  top: 120px; 
+  width: 500px; 
+  height: 450px; 
+  border: 3px solid #000; 
+}
+
+.straight-layout { 
+  position: absolute; 
+  left: 50%; 
+  transform: translateX(-50%); 
+  top: 100px; 
+  width: 600px; 
+  height: 450px; 
+  border: 3px solid #000; 
+}
+
+.lift-row {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.path-start {
+  background-color: #44cc88 !important;
+  color: white !important;
+}
+
+.path-end {
+  background-color: #ff6a44 !important;
+  color: white !important;
+}
+
+.path-mid {
+  background-color: #4a9eff !important;
+  color: white !important;
+  border-color: #fff !important;
+}
+
+/* Block B layout */
+.block-b-page { 
+  background: white; 
+  width: 900px; 
+  margin: 0 auto; 
+  padding: 20px; 
+  border: 3px solid #000; 
+  min-height: 500px; 
+  position: relative;
+  color: #000;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.b-sidebar { 
+  position: absolute; 
+  left: 40px; 
+  top: 100px; 
+  width: 120px; 
+  display: flex; 
+  flex-direction: column; 
+  gap: 10px; 
+}
+
+.b-main-wing { 
+  position: absolute; 
+  right: 60px; 
+  top: 100px; 
+  width: 550px; 
+  height: 450px; 
+  border: 3px solid #000; 
+}
+
