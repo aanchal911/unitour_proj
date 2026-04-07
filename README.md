@@ -1,130 +1,259 @@
-🧭 NUV Campus Navigator
-<div align="center">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NUV Campus Navigator</title>
 
-Interactive 3D campus navigation and path-finding system built with React + Vite.
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.6;
+      max-width: 900px;
+      margin: auto;
+      padding: 20px;
+      background: #fafafa;
+      color: #222;
+    }
 
-Navigate buildings, explore floors, and calculate optimal routes across campus visually.
+    h1, h2, h3 {
+      color: #0f172a;
+    }
+
+    code {
+      background: #f1f5f9;
+      padding: 3px 6px;
+      border-radius: 5px;
+    }
+
+    pre {
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 15px;
+      border-radius: 8px;
+      overflow-x: auto;
+    }
+
+    .center {
+      text-align: center;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 10px;
+      background: #2563eb;
+      color: white;
+      border-radius: 6px;
+      margin: 4px;
+      font-size: 14px;
+    }
+
+    img.preview {
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      margin: 20px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    table, th, td {
+      border: 1px solid #ddd;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: left;
+    }
+
+    th {
+      background: #f1f5f9;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="center">
+
+<h1>🧭 NUV Campus Navigator</h1>
+
+<p>
+Interactive 3D campus navigation and path-finding system built with
+<strong>React + Vite</strong>.
+</p>
+
+<span class="badge">React</span>
+<span class="badge">Vite</span>
+<span class="badge">TypeScript</span>
+<span class="badge">Tailwind CSS</span>
 
 </div>
-📌 Overview
 
-NUV Campus Navigator is an interactive web application designed to help students and visitors easily navigate a university campus.
+<hr/>
 
-The application provides:
+<h2>🎬 Demo Preview</h2>
 
-🗺️ Visual campus exploration
-🧭 Smart route calculation between locations
-🏢 Building & floor blueprints
-📍 Step-by-step navigation guidance
-🎯 Quick destination access
+<p class="center">
+<!-- Replace with your GIF -->
+<img class="preview" src="preview.gif" alt="NUV Campus Navigator Demo GIF"/>
+</p>
 
-It combines modern UI design with graph-based pathfinding to create a smooth navigation experience.
+<hr/>
 
-✨ Features
-🧭 Pathfinder Navigation
-Select starting point and destination
-Automatically calculates optimal routes
-Displays step-by-step navigation instructions
-🏫 Campus Visualization
-Interactive campus map
-Building highlighting
-Outdoor & indoor navigation support
-🧱 Blueprint Viewer
-Multi-floor building exploration
-Floor switching (Basement / Ground / Upper floors)
-Room-level interaction
-🎮 Interactive Controls
-Map rotation & viewing angles
-Compass orientation
-Dynamic overlays and transitions
-⚡ Modern UI
-Animated interfaces using Motion
-Tailwind-powered styling
-Responsive layout
-🛠️ Tech Stack
-Category	Technology
-Frontend	React 19
-Build Tool	Vite
-Language	TypeScript
-Styling	Tailwind CSS
-Animation	Motion
-Icons	Lucide React
-Backend Utilities	Express
-AI Integration	Google GenAI SDK
-📂 Project Structure
+<h2>📌 Overview</h2>
+
+<p>
+<strong>NUV Campus Navigator</strong> is an interactive web application that helps
+students and visitors easily navigate a university campus using visual maps
+and intelligent route calculation.
+</p>
+
+<ul>
+  <li>🗺️ Interactive campus exploration</li>
+  <li>🧭 Smart pathfinding between locations</li>
+  <li>🏢 Building and floor blueprints</li>
+  <li>📍 Step-by-step navigation</li>
+</ul>
+
+<hr/>
+
+<h2>✨ Features</h2>
+
+<h3>🧭 Pathfinder Navigation</h3>
+<ul>
+  <li>Select start and destination points</li>
+  <li>Automatic shortest-path calculation</li>
+  <li>Navigation instructions</li>
+</ul>
+
+<h3>🏫 Campus Visualization</h3>
+<ul>
+  <li>Interactive campus map</li>
+  <li>Building highlighting</li>
+  <li>Indoor & outdoor navigation</li>
+</ul>
+
+<h3>🎮 Interactive UI</h3>
+<ul>
+  <li>Animated transitions</li>
+  <li>Compass orientation</li>
+  <li>Responsive design</li>
+</ul>
+
+<hr/>
+
+<h2>🛠️ Tech Stack</h2>
+
+<table>
+<tr><th>Category</th><th>Technology</th></tr>
+<tr><td>Frontend</td><td>React 19</td></tr>
+<tr><td>Build Tool</td><td>Vite</td></tr>
+<tr><td>Language</td><td>TypeScript</td></tr>
+<tr><td>Styling</td><td>Tailwind CSS</td></tr>
+<tr><td>Animation</td><td>Motion</td></tr>
+<tr><td>Backend Utilities</td><td>Express</td></tr>
+<tr><td>AI Integration</td><td>Google GenAI SDK</td></tr>
+</table>
+
+<hr/>
+
+<h2>📂 Project Structure</h2>
+
+<pre>
 nuv-campus-navigator/
 │
 ├── src/
-│   ├── App.tsx          # Main application UI & logic
-│   ├── Blueprints.tsx   # Building blueprint renderer
-│   ├── data.ts          # Campus nodes & graph data
-│   ├── main.tsx         # App entry point
-│   └── index.css        # Global styles
+│   ├── App.tsx
+│   ├── Blueprints.tsx
+│   ├── data.ts
+│   ├── main.tsx
+│   └── index.css
 │
 ├── index.html
 ├── vite.config.ts
 ├── package.json
-├── tsconfig.json
 └── .env.example
-⚙️ Installation & Setup
-✅ Prerequisites
-Node.js 18+
-npm or pnpm
-1️⃣ Clone the Repository
-git clone <your-repo-url>
+</pre>
+
+<hr/>
+
+<h2>⚙️ Installation</h2>
+
+<h3>1️⃣ Clone Repository</h3>
+
+<pre>
+git clone &lt;your-repo-url&gt;
 cd nuv-campus-navigator
-2️⃣ Install Dependencies
+</pre>
+
+<h3>2️⃣ Install Dependencies</h3>
+
+<pre>
 npm install
-3️⃣ Configure Environment Variables
+</pre>
 
-Create a file:
+<h3>3️⃣ Setup Environment Variables</h3>
 
-.env.local
-
-Add your API key:
-
+<pre>
 GEMINI_API_KEY=your_api_key_here
+</pre>
 
-(See .env.example for reference.)
+<h3>4️⃣ Run Development Server</h3>
 
-4️⃣ Run Development Server
+<pre>
 npm run dev
+</pre>
 
-App will start at:
+<p>Open: <code>http://localhost:3000</code></p>
 
-http://localhost:3000
-📦 Available Scripts
-Command	Description
-npm run dev	Start development server
-npm run build	Build production bundle
-npm run preview	Preview production build
-npm run clean	Remove build files
-npm run lint	TypeScript validation
-🧠 How Navigation Works
+<hr/>
 
-The navigator uses a node-based graph system:
+<h2>🧠 How Navigation Works</h2>
 
-Campus locations are modeled as nodes.
-Connections represent walkable paths.
-Pathfinding computes the shortest route.
-Results are rendered visually and as instructions.
-🎯 Use Cases
-New students finding classrooms
-Campus visitors navigation
-Event wayfinding
-Digital campus kiosks
-Smart campus applications
-🚀 Future Improvements
-📱 Mobile gesture navigation
-📍 Live GPS positioning
-🔊 Voice directions
-🌙 Dark/light theme toggle
-🧭 Real-time crowd-aware routing
-🤝 Contributing
+<ol>
+  <li>Campus locations are modeled as nodes.</li>
+  <li>Paths connect walkable routes.</li>
+  <li>Shortest-path algorithm computes navigation.</li>
+  <li>Results render visually and as instructions.</li>
+</ol>
 
-Contributions are welcome!
+<hr/>
 
-Fork the repo
-Create a feature branch
-Commit changes
-Open a Pull Request
+<h2>🚀 Future Improvements</h2>
+
+<ul>
+  <li>📱 Mobile gesture navigation</li>
+  <li>📍 Live GPS positioning</li>
+  <li>🔊 Voice directions</li>
+  <li>🌙 Dark mode</li>
+</ul>
+
+<hr/>
+
+<h2>🤝 Contributing</h2>
+
+<ol>
+  <li>Fork the repository</li>
+  <li>Create a feature branch</li>
+  <li>Commit changes</li>
+  <li>Open a Pull Request</li>
+</ol>
+
+<hr/>
+
+<h2>📄 License</h2>
+
+<p>MIT License</p>
+
+<hr/>
+
+<div class="center">
+<p><strong>Built with ❤️ by Aanchal</strong></p>
+</div>
+
+</body>
+</html>
