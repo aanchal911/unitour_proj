@@ -26,33 +26,55 @@ import { motion, AnimatePresence } from 'motion/react';
 import { blockData, NODES, EDGES } from './data';
 import { BlueprintRenderer } from './Blueprints';
 
-// --- Dijkstra Algorithm ---
+// --- Dijkstra's Algorithm Implementation ---
+/**
+ * This function calculates the shortest path between two points on campus.
+ * It uses Dijkstra's Algorithm, which is a standard greedy algorithm for 
+ * finding the shortest paths between nodes in a weighted graph.
+ * 
+ * @param startId - The ID of the starting location (e.g., 'gate1')
+ * @param endId - The ID of the destination (e.g., 'a_3_phy')
+ */
 function findShortestPath(startId: string, endId: string) {
+  // 1. DATA STRUCTURE: Adjacency List
+  // We transform our flat EDGES array into an object where each node 
+  // points to its neighbors and the distance (weight) to them.
   const graph: Record<string, Record<string, number>> = {};
   
-  // Build adjacency list
+  // Initialize the graph with empty neighbor lists for every node
   Object.keys(NODES).forEach(id => graph[id] = {});
+  
+  // Populate the adjacency list from the EDGES data
   EDGES.forEach(([u, v, w]) => {
     const uStr = u as string;
     const vStr = v as string;
     const wNum = w as number;
+    // Since campus paths are bidirectional, we add connections both ways
     graph[uStr][vStr] = wNum;
     graph[vStr][uStr] = wNum;
   });
 
+  // 2. INITIALIZATION
+  // distances: Stores the shortest distance found so far from 'start' to each node
   const distances: Record<string, number> = {};
+  // previous: Stores the "parent" node for each node to reconstruct the path later
   const previous: Record<string, string | null> = {};
+  // queue: The set of nodes we haven't "visited" or finalized yet
   const queue = new Set<string>();
 
+  // Set initial distances to Infinity and previous nodes to null
   Object.keys(graph).forEach(node => {
     distances[node] = Infinity;
     previous[node] = null;
     queue.add(node);
   });
 
+  // Distance from start to itself is always 0
   distances[startId] = 0;
 
+  // 3. CORE LOOP: Process nodes until the queue is empty
   while (queue.size > 0) {
+    // GREEDY STEP: Find the node in the queue with the smallest distance
     let closestNode: string | null = null;
     queue.forEach(node => {
       if (closestNode === null || distances[node] < distances[closestNode]) {
@@ -60,14 +82,20 @@ function findShortestPath(startId: string, endId: string) {
       }
     });
 
+    // If we can't find a reachable node or we've reached our destination, stop
     if (!closestNode || distances[closestNode] === Infinity) break;
     if (closestNode === endId) break;
 
+    // Remove the current node from the queue (mark as visited)
     queue.delete(closestNode);
 
+    // RELAXATION STEP: Check all neighbors of the current node
     for (const neighbor in graph[closestNode]) {
       if (queue.has(neighbor)) {
+        // Calculate the distance to the neighbor through the current node
         const alt = distances[closestNode] + graph[closestNode][neighbor];
+        
+        // If this new path is shorter than the one we previously knew, update it
         if (alt < distances[neighbor]) {
           distances[neighbor] = alt;
           previous[neighbor] = closestNode;
@@ -76,15 +104,18 @@ function findShortestPath(startId: string, endId: string) {
     }
   }
 
+  // 4. PATH RECONSTRUCTION
+  // We trace back from the 'endId' to the 'startId' using the 'previous' pointers
   const path: string[] = [];
   let current: string | null = endId;
   while (current) {
-    path.unshift(current);
+    path.unshift(current); // Add to the beginning of the array
     current = previous[current];
   }
 
+  // Return the final path array and the total distance calculated
   return {
-    path: path[0] === startId ? path : [],
+    path: path[0] === startId ? path : [], // Ensure the path actually starts at the start
     distance: Math.round(distances[endId] || 0)
   };
 }
@@ -119,7 +150,6 @@ const NodeMap = ({ route }: { route: { path: string[] } | null }) => {
               if (id === 'c_admission') return { x: 200, y: 420 };
               if (id === 'amphi_g') return { x: 400, y: 350 };
               if (id === 'b_g_lobby') return { x: 650, y: 250 };
-              if (id === 'a_g_reception') return { x: 450, y: 200 };
               if (id.startsWith('a_')) return { x: 250, y: 150 };
               if (id.startsWith('b_')) return { x: 750, y: 250 };
               if (id.startsWith('c_')) return { x: 225, y: 460 };
@@ -152,7 +182,6 @@ const NodeMap = ({ route }: { route: { path: string[] } | null }) => {
               if (id === 'c_admission') return { x: 200, y: 420 };
               if (id === 'amphi_g') return { x: 400, y: 350 };
               if (id === 'b_g_lobby') return { x: 650, y: 250 };
-              if (id === 'a_g_reception') return { x: 450, y: 200 };
               if (id.startsWith('a_')) return { x: 250, y: 150 };
               if (id.startsWith('b_')) return { x: 750, y: 250 };
               if (id.startsWith('c_')) return { x: 225, y: 460 };
@@ -293,6 +322,7 @@ export default function App() {
 
   const clearPath = () => {
     setRoute(null);
+    setActiveBlock(null);
   };
 
   // --- Render Helpers ---
@@ -545,11 +575,9 @@ export default function App() {
                           <span className="text-xs text-[#c0392b] font-bold tracking-widest uppercase">ROUTE FOUND</span>
                           <button onClick={clearPath} className="text-[10px] text-white/30 hover:text-white uppercase tracking-tighter">Clear</button>
                         </div>
-                        <div className="text-2xl font-teko tracking-wider">~{route.distance} Units</div>
-                        <div className="text-[10px] text-white/50 tracking-widest uppercase mt-1">Estimated walk: {Math.ceil(route.distance / 10)} min</div>
                       </div>
 
-                      <div className="space-y-3">
+                      <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
                         {route.path.map((nodeId, idx) => (
                           <div key={idx} className="flex gap-3 items-start group">
                             <div className="flex flex-col items-center shrink-0 mt-1">
@@ -809,10 +837,7 @@ export default function App() {
             {/* Route Visualization on Map */}
             {route && (
               <div className="absolute inset-0 pointer-events-none z-20">
-                {/* This is a simplified representation, in a real app we'd project 3D coordinates */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#4adaaa] font-teko text-xl animate-pulse">
-                  ROUTE ACTIVE
-                </div>
+                {/* Route is active - visual indicator removed as per user request */}
               </div>
             )}
           </div>
@@ -829,135 +854,183 @@ export default function App() {
             exit={{ opacity: 0, scale: 0.95 }}
             className="fixed inset-0 z-[100] bg-[#050a19] flex flex-col pt-[58px]"
           >
-            <div className="flex-1 flex flex-col max-w-4xl mx-auto w-full p-6 md:p-12 overflow-hidden">
+            <div className="flex-1 flex flex-col max-w-[1600px] mx-auto w-full p-6 md:p-12 overflow-hidden">
               <div className="flex items-center justify-between mb-8">
                 <h2 className="font-teko text-5xl tracking-[10px] text-[#c0392b] uppercase">Pathfinder</h2>
                 <button 
-                  onClick={() => setShowNavOverlay(false)}
+                  onClick={() => {
+                    setShowNavOverlay(false);
+                  }}
                   className="p-3 bg-white/5 hover:bg-white/10 rounded-full transition-all border border-white/10"
                 >
                   <X className="w-8 h-8 text-white/50" />
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                <div className="space-y-2">
-                  <label className="text-xs text-white/30 uppercase tracking-[4px]">Starting Point</label>
-                  <div className="relative">
-                    <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#4a9eff]" />
-                    <select 
-                      value={fromNode}
-                      onChange={(e) => setFromNode(e.target.value)}
-                      className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-6 text-lg outline-none focus:border-[#4a9eff] appearance-none transition-all"
-                    >
-                      {Object.entries(NODES).map(([id, node]) => (
-                        <option key={id} value={id} className="bg-[#0c1628]">{node.name}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-xs text-white/30 uppercase tracking-[4px]">Destination</label>
-                  <div className="relative">
-                    <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#ef4444]" />
-                    <select 
-                      value={toNode}
-                      onChange={(e) => setToNode(e.target.value)}
-                      className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-6 text-lg outline-none focus:border-[#ef4444] appearance-none transition-all"
-                    >
-                      {Object.entries(NODES).map(([id, node]) => (
-                        <option key={id} value={id} className="bg-[#0c1628]">{node.name}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              <button 
-                onClick={() => {
-                  runPathfinder();
-                }}
-                className="w-full bg-[#c0392b] hover:bg-[#a0291b] text-white rounded-2xl py-5 font-teko text-3xl tracking-[8px] transition-all shadow-2xl shadow-[#c0392b]/20 mb-12 uppercase"
-              >
-                Calculate Route
-              </button>
-
-              <div className="flex-1 overflow-y-auto pr-4 custom-scrollbar">
-                {route ? (
-                  <div className="space-y-8">
-                    <div className="flex items-center justify-between border-b border-white/5 pb-4">
-                      <h3 className="text-xs text-white/20 uppercase tracking-[6px]">Step-by-Step Route</h3>
-                      <button 
-                        onClick={clearPath}
-                        className="text-xs text-[#ef4444] hover:underline uppercase tracking-widest"
-                      >
-                        Clear Route
-                      </button>
-                    </div>
-                    
-                    <div className="bg-[#c0392b]/10 border border-[#c0392b]/20 rounded-3xl p-8 flex items-center justify-between">
-                      <div>
-                        <div className="text-xs text-white/30 uppercase tracking-[4px] mb-2">Total Distance</div>
-                        <div className="text-5xl font-teko text-white tracking-[4px]">{route.distance} Units</div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-xs text-white/30 uppercase tracking-[4px] mb-2">Estimated Time</div>
-                        <div className="text-3xl font-teko text-[#4adaaa] tracking-[2px]">{Math.ceil(route.distance / 10)} mins</div>
-                      </div>
-                    </div>
-
-                    <div className="space-y-6">
-                      {route.path.map((nodeId, idx) => {
-                        const node = NODES[nodeId as keyof typeof NODES];
-                        const nextNodeId = route.path[idx + 1];
-                        const nextNode = nextNodeId ? NODES[nextNodeId as keyof typeof NODES] : null;
-                        
-                        return (
-                          <div key={idx} className="flex gap-8 group">
-                            <div className="flex flex-col items-center">
-                              <div className={`w-6 h-6 rounded-full border-4 ${idx === 0 ? 'bg-[#4a9eff] border-[#4a9eff]' : idx === route.path.length - 1 ? 'bg-[#ef4444] border-[#ef4444]' : 'bg-transparent border-white/20'}`} />
-                              {idx < route.path.length - 1 && <div className="w-[2px] flex-1 bg-white/10 my-2" />}
-                            </div>
-                            <div className="pb-8 flex-1">
-                              <div className="text-2xl font-teko text-white/90 group-hover:text-white transition-colors tracking-widest uppercase">{node?.name || nodeId}</div>
-                              <div className="text-xs text-white/20 uppercase tracking-widest mt-1">
-                                {node?.floor === 'outside' ? 'Outdoor Area' : `${node?.floor} Floor`}
-                              </div>
-                              {nextNode && (
-                                <div className="mt-4 flex items-center gap-3 text-[#4a9eff]/60">
-                                  <ChevronRight className="w-4 h-4" />
-                                  <span className="text-sm uppercase tracking-widest">Proceed to {nextNode.name}</span>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <h3 className="text-xs text-white/20 uppercase tracking-[6px] mb-6 border-b border-white/5 pb-2">Quick Destinations</h3>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                      {Object.entries(NODES).filter(([id]) => !id.includes('stair')).map(([id, node]) => (
-                        <button
-                          key={id}
-                          onClick={() => {
-                            setToNode(id);
-                            runPathfinder();
-                          }}
-                          className="p-4 bg-white/5 border border-white/10 rounded-xl text-left hover:bg-white/10 hover:border-[#4a9eff]/50 transition-all group"
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 flex-1 overflow-hidden">
+                <div className="lg:col-span-4 flex flex-col overflow-hidden">
+                  <div className="grid grid-cols-1 gap-4 mb-6">
+                    <div className="space-y-2">
+                      <label className="text-xs text-white/30 uppercase tracking-[4px]">Starting Point</label>
+                      <div className="relative">
+                        <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#4a9eff]" />
+                        <select 
+                          value={fromNode}
+                          onChange={(e) => setFromNode(e.target.value)}
+                          className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-6 text-lg outline-none focus:border-[#4a9eff] appearance-none transition-all"
                         >
-                          <div className="text-sm font-medium text-white/70 group-hover:text-white">{node.name}</div>
-                          <div className="text-[10px] text-white/20 uppercase tracking-widest mt-1">
-                            {node.floor === 'outside' ? 'Outdoor' : `${node.floor} Floor`}
-                          </div>
-                        </button>
-                      ))}
+                          {Object.entries(NODES).map(([id, node]) => (
+                            <option key={id} value={id} className="bg-[#0c1628]">{node.name}</option>
+                          ))}
+                        </select>
+                      </div>
                     </div>
-                  </>
-                )}
+
+                    <div className="space-y-2">
+                      <label className="text-xs text-white/30 uppercase tracking-[4px]">Destination</label>
+                      <div className="relative">
+                        <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#ef4444]" />
+                        <select 
+                          value={toNode}
+                          onChange={(e) => setToNode(e.target.value)}
+                          className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-6 text-lg outline-none focus:border-[#ef4444] appearance-none transition-all"
+                        >
+                          {Object.entries(NODES).map(([id, node]) => (
+                            <option key={id} value={id} className="bg-[#0c1628]">{node.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button 
+                    onClick={() => {
+                      runPathfinder();
+                    }}
+                    className="w-full bg-[#c0392b] hover:bg-[#a0291b] text-white rounded-2xl py-5 font-teko text-3xl tracking-[8px] transition-all shadow-2xl shadow-[#c0392b]/20 mb-6 uppercase shrink-0"
+                  >
+                    Calculate Route
+                  </button>
+
+                  <div className="flex-1 overflow-y-auto pr-4 custom-scrollbar">
+                    {route ? (
+                      <div className="space-y-8">
+                        <div className="flex items-center justify-between border-b border-white/5 pb-4">
+                          <h3 className="text-xs text-white/20 uppercase tracking-[6px]">Step-by-Step Route</h3>
+                          <button 
+                            onClick={clearPath}
+                            className="text-xs text-[#ef4444] hover:underline uppercase tracking-widest"
+                          >
+                            Clear Route
+                          </button>
+                        </div>
+                        
+                        <div className="bg-[#c0392b]/10 border border-[#c0392b]/20 rounded-3xl p-8 flex items-center justify-center">
+                          <div className="text-center">
+                            <div className="text-xs text-white/30 uppercase tracking-[4px] mb-2">Navigation Status</div>
+                            <div className="text-5xl font-teko text-white tracking-[4px]">ROUTE ACTIVE</div>
+                          </div>
+                        </div>
+
+                        <div className="space-y-6 max-h-[70vh] overflow-y-auto pr-4 custom-scrollbar">
+                          {route.path.map((nodeId, idx) => {
+                            const node = NODES[nodeId as keyof typeof NODES];
+                            const nextNodeId = route.path[idx + 1];
+                            const nextNode = nextNodeId ? NODES[nextNodeId as keyof typeof NODES] : null;
+                            
+                            return (
+                              <div key={idx} className="flex gap-8 group">
+                                <div className="flex flex-col items-center">
+                                  <div className={`w-6 h-6 rounded-full border-4 ${idx === 0 ? 'bg-[#4a9eff] border-[#4a9eff]' : idx === route.path.length - 1 ? 'bg-[#ef4444] border-[#ef4444]' : 'bg-transparent border-white/20'}`} />
+                                  {idx < route.path.length - 1 && <div className="w-[2px] flex-1 bg-white/10 my-2" />}
+                                </div>
+                                <div className="pb-8 flex-1">
+                                  <div className="text-2xl font-teko text-white/90 group-hover:text-white transition-colors tracking-widest uppercase">{node?.name || nodeId}</div>
+                                  <div className="text-xs text-white/20 uppercase tracking-widest mt-1">
+                                    {node?.floor === 'outside' ? 'Outdoor Area' : `${node?.floor} Floor`}
+                                  </div>
+                                  {nextNode && (
+                                    <div className="mt-4 flex items-center gap-3 text-[#4a9eff]/60">
+                                      <ChevronRight className="w-4 h-4" />
+                                      <span className="text-sm uppercase tracking-widest">Proceed to {nextNode.name}</span>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <h3 className="text-xs text-white/20 uppercase tracking-[6px] mb-6 border-b border-white/5 pb-2">Quick Destinations</h3>
+                        <div className="grid grid-cols-1 gap-4">
+                          {Object.entries(NODES).filter(([id]) => !id.includes('stair')).map(([id, node]) => (
+                            <button
+                              key={id}
+                              onClick={() => {
+                                setToNode(id);
+                                runPathfinder();
+                              }}
+                              className="p-4 bg-white/5 border border-white/10 rounded-xl text-left hover:bg-white/10 hover:border-[#4a9eff]/50 transition-all group"
+                            >
+                              <div className="text-sm font-medium text-white/70 group-hover:text-white">{node.name}</div>
+                              <div className="text-[10px] text-white/20 uppercase tracking-widest mt-1">
+                                {node.floor === 'outside' ? 'Outdoor' : `${node.floor} Floor`}
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                <div className="lg:col-span-8 bg-black/20 rounded-3xl border border-white/5 overflow-hidden flex flex-col">
+                  <div className="p-4 border-b border-white/5 bg-white/5 flex flex-col gap-4">
+                    <div className="flex items-center justify-between">
+                      <div className="font-teko text-xl tracking-widest text-white/50 uppercase">Visual Map View</div>
+                      {activeBlock && (
+                        <div className="text-xs text-[#4a9eff] font-bold tracking-widest uppercase">
+                          {blockData[activeBlock as keyof typeof blockData].name}
+                        </div>
+                      )}
+                    </div>
+                    {activeBlock && (
+                      <div className="flex gap-2 flex-wrap">
+                        {Object.keys(blockData[activeBlock as keyof typeof blockData].rooms).map(floor => (
+                          <button
+                            key={floor}
+                            onClick={() => setActiveFloor({ ...activeFloor, [activeBlock]: floor })}
+                            className={`px-3 py-1 rounded-lg border font-teko text-xs tracking-widest transition-all ${
+                              activeFloor[activeBlock] === floor 
+                              ? 'bg-[#1a3a5a] border-[#4a9eff] text-[#4a9eff]' 
+                              : 'border-[#2a4a6a] text-[#6a9aaa] hover:bg-white/5'
+                            }`}
+                          >
+                            {floor === 'Basement' ? '🅱 BASE' : floor === 'Ground' ? 'G FLOOR' : `${floor} FLOOR`}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1 relative overflow-hidden">
+                    {activeBlock ? (
+                      <BlueprintRenderer 
+                        block={activeBlock.replace('block', '')} 
+                        floor={activeFloor[activeBlock]} 
+                        fromNode={fromNode} 
+                        toNode={toNode} 
+                        route={route}
+                        onRoomClick={handleRoomClick} 
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-white/20 font-teko text-2xl tracking-[5px] uppercase">
+                        Select a destination to view map
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           </motion.div>

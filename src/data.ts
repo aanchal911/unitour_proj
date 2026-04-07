@@ -17,7 +17,7 @@ export const blockData = {
     },
     rooms: {
       'Basement': ['Tropical Café|amen', 'Sports Room|amen', 'Q-Lab (Student Space)|lab', '2-Wheeler Parking (A)|util', 'Car Parking|util'],
-      'Ground': ['Lobby / Main Entry|adm', 'Guest Lounge A114|adm', 'Digital Tech A114|adm', 'Admissions A115|adm', 'Asst Registrar A116|adm', 'Accounts A117|adm', 'Exam Cell A119|adm', 'Exam Cell A120|adm', 'Registrar A121|adm', 'HR & First Aid A122|adm', 'Provost A123|adm', 'Conf Room A124|adm', 'Conf Room 2 A125|adm', 'NCC Office|adm', 'Reception|adm'],
+      'Ground': ['Lobby / Main Entry|adm', 'Guest Lounge A114|adm', 'Digital Tech A114|adm', 'Admissions A115|adm', 'Asst Registrar A116|adm', 'Accounts A117|adm', 'Exam Cell A119|adm', 'Exam Cell A120|adm', 'Registrar A121|adm', 'HR & First Aid A122|adm', 'Provost A123|adm', 'Conf Room A124|adm', 'Conf Room 2 A125|adm', 'NCC Office|adm'],
       '1st': ['University Office|adm', 'Conf Room 2 A125|adm', 'Lec Hall A107|lec', 'Lec Hall A108|lec', 'Lec Hall A109|lec', 'Faculty Room SOS|fac', 'Raman Lab|lab', 'Spectroscopy Lab|lab', 'DILO Room|amen', 'Research Lab SOS|lab', 'Library|amen'],
       '2nd': ['Faculty SBL A214|fac', 'Lec A215|lec', 'Lec A216|lec', 'Lec A217|lec', 'Medical Room A218|amen', 'Server Room A201|util', 'Comp Lab A202|lab', 'Comp Lab A202-B|lab', 'Comp Lab A203-A|lab', 'Comp Lab A203-B|lab', 'Lec Hall A204|lec', 'Faculty A205|fac', 'Lec Hall A206|lec', 'Comp Lab A207|lab', 'Lec Hall A208|lec', 'Lec A209|lec', 'Lec Hall A223|lec', 'Faculty A224|fac', 'Lec Hall A225|lec'],
       '3rd': ['Physics Lab A316|lab', 'Faculty SET A313|fac', 'Chem Lab A317|lab', 'Chem Instrum A318|lab', 'Life Sci Lab A311|lab', 'Career Dev A312|adm', 'Comp Lab A303|lab', 'Life Sci Lab A305|lab', 'Chem Lab A306|lab', 'Server A301|util', 'Faculty SET A307|fac', 'Chem Lab A310|lab', 'Cabin A302|fac', 'Conf Room A304|adm'],
@@ -68,6 +68,16 @@ export const blockData = {
   }
 };
 
+// --- CAMPUS GRAPH DATA ---
+/**
+ * NODES: These represent the "Vertices" of our graph.
+ * Each node is a specific location on campus (room, stair, gate, etc.)
+ * Properties:
+ * - name: Display name
+ * - type: Category (room, stair, gate, etc.)
+ * - floor: Which floor it's on (B, G, 1, 2, etc.)
+ * - block: Which building block it belongs to
+ */
 export const NODES = {
   gate1: { name: 'Gate 1', type: 'gate', floor: 'outside' },
   gate2: { name: 'Gate 2', type: 'gate', floor: 'outside' },
@@ -126,7 +136,6 @@ export const NODES = {
   a_b_qlab: { name: 'Q-Lab (Student Space)', type: 'room', floor: 'B', block: 'blockA' },
   a_b_parking: { name: 'Two-Wheeler Parking (A)', type: 'outdoor', floor: 'B', block: 'blockA' },
   a_stair_b: { name: 'Block A Stair (B)', type: 'stair', floor: 'B', block: 'blockA' },
-  a_g_reception: { name: 'Reception', type: 'room', floor: 'G', block: 'blockA' },
   a_g_ncc: { name: 'NCC Office', type: 'room', floor: 'G', block: 'blockA' },
   a_g_lab: { name: 'Lab EEE & MECH', type: 'room', floor: 'G', block: 'blockA' },
   a_g_maggie: { name: 'Maggie & Coffee', type: 'room', floor: 'G', block: 'blockA' },
@@ -234,6 +243,15 @@ export const NODES = {
   a_stair3_8: { name: 'Block A Stair 3 (8F)', type: 'stair', floor: '8', block: 'blockA' },
 };
 
+/**
+ * EDGES: These represent the "Weighted Connections" between nodes.
+ * Each entry is an array: [NodeA, NodeB, Distance]
+ * - NodeA & NodeB: The two locations that are connected.
+ * - Distance: The "weight" or cost to travel between them.
+ * 
+ * Dijkstra's algorithm uses these weights to find the path with the 
+ * lowest total sum of distances.
+ */
 export const EDGES = [
   ['gate1', 'c_admission', 30], ['gate1', 'amphi_g', 50],
   ['gate2', 'c_admission', 25], ['gate2', 'amphi_g', 55], ['gate2', 'parking', 40],
@@ -241,11 +259,9 @@ export const EDGES = [
   ['c_admission', 'amphi_g', 30], ['c_admission', 'b_g_lobby', 35], ['c_admission', 'c_admin', 10], ['c_admission', 'c_stair_g', 15],
   ['c_canteen', 'amphi_b', 20], ['c_canteen', 'c_kitchen', 10], ['c_canteen', 'c_stair_b', 15],
   ['c_stair_b', 'c_stair_g', 20],
-  ['amphi_g', 'amphi_b', 15], ['amphi_g', 'a_g_reception', 25], ['amphi_g', 'b_g_lobby', 25],
+  ['amphi_g', 'amphi_b', 15], ['amphi_g', 'b_g_lobby', 25], ['amphi_g', 'a_stair3_g', 35],
   ['amphi_b', 'a_b_cafe', 20], ['amphi_b', 'b_b_music', 20],
-  ['a_g_reception', 'a_g_ncc', 20], ['a_g_reception', 'a_g_lab', 25], ['a_g_reception', 'a_stair1_g', 15],
-  ['a_g_reception', 'a_stair2_g', 20], ['a_g_reception', 'a_stair3_g', 10],
-  ['a_g_lab', 'a_stair3_g', 10], ['a_g_maggie', 'a_stair3_g', 15], ['a_g_sitting', 'a_stair3_g', 20],
+  ['a_g_ncc', 'a_stair3_g', 30], ['a_g_lab', 'a_stair3_g', 10], ['a_g_maggie', 'a_stair3_g', 15], ['a_g_sitting', 'a_stair3_g', 20],
   ['a_g_library', 'a_stair1_g', 25], ['a_g_pond', 'a_stair1_g', 30], ['a_g_tea', 'a_stair3_g', 35],
   ['a_stair1_g', 'pond', 30], ['pond', 'b_g_lobby', 30], ['pond', 'basketball', 25],
   ['basketball', 'a_stair1_g', 20],
