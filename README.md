@@ -23,7 +23,7 @@ Interactive 3D campus navigation and path-finding system built with
 <hr/>
 
 <h2>🎬 Demo Preview</h2>
-
+https://unitour-proj.vercel.app/
 <p class="center">
 <!-- Replace with your GIF -->
 <img class="preview" src="preview.gif" alt="NUV Campus Navigator Demo GIF"/>
