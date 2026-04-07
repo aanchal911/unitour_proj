@@ -3,81 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>NUV Campus Navigator</title>
+ 
 
-  <style>
-    body {
-      font-family: Arial, Helvetica, sans-serif;
-      line-height: 1.6;
-      max-width: 900px;
-      margin: auto;
-      padding: 20px;
-      background: #fafafa;
-      color: #222;
-    }
-
-    h1, h2, h3 {
-      color: #0f172a;
-    }
-
-    code {
-      background: #f1f5f9;
-      padding: 3px 6px;
-      border-radius: 5px;
-    }
-
-    pre {
-      background: #0f172a;
-      color: #e2e8f0;
-      padding: 15px;
-      border-radius: 8px;
-      overflow-x: auto;
-    }
-
-    .center {
-      text-align: center;
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 6px 10px;
-      background: #2563eb;
-      color: white;
-      border-radius: 6px;
-      margin: 4px;
-      font-size: 14px;
-    }
-
-    img.preview {
-      width: 100%;
-      border-radius: 12px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-      margin: 20px 0;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    table, th, td {
-      border: 1px solid #ddd;
-    }
-
-    th, td {
-      padding: 10px;
-      text-align: left;
-    }
-
-    th {
-      background: #f1f5f9;
-    }
-  </style>
-</head>
-
-<body>
-
-<div class="center">
 
 <h1>🧭 NUV Campus Navigator</h1>
 
